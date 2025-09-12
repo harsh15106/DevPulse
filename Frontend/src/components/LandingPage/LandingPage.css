@@ -1,0 +1,223 @@
+.landing-page-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    padding: 2rem;
+}
+
+.landing-header {
+    width: 100%;
+    max-width: 1280px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: auto;
+}
+
+.logo-container h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.theme-toggle-landing {
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background-color: var(--card-bg);
+}
+
+.landing-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    margin-bottom: auto;
+    animation: fadeIn 0.5s ease-out;
+}
+
+.tagline {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.description {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    max-width: 500px;
+}
+
+.monitor-form {
+    display: flex;
+    width: 100%;
+    gap: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.07);
+}
+
+.url-input {
+    flex-grow: 1;
+    background-color: var(--card-bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.8rem 1rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.url-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+.monitor-button {
+    background-color: var(--accent-color);
+    color: #ffffff;
+    border-radius: 0.5rem;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+}
+
+.monitor-button:hover {
+    background-color: var(--accent-color-hover);
+}
+
+.error-message {
+    margin-top: 1rem;
+    color: var(--error-color);
+    font-weight: 500;
+}
+
+.auth-button {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    background-color: transparent;
+    color: var(--text-tertiary);
+    font-weight: 500;
+}
+.auth-button:hover {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+}
+.auth-button-secondary {
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--accent-color);
+    background-color: var(--accent-color);
+    color: #ffffff;
+    font-weight: 500;
+}
+.auth-button-secondary:hover {
+    background-color: var(--accent-color-hover);
+    border-color: var(--accent-color-hover);
+}
+
+.login-prompt-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.login-prompt-modal {
+    background-color: var(--card-bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.login-prompt-modal h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0 0 0.75rem 0;
+}
+
+.login-prompt-modal p {
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.prompt-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.prompt-button-primary,
+.prompt-button-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.prompt-button-primary {
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
+.prompt-button-primary:hover {
+    background-color: var(--accent-color-hover);
+}
+
+.prompt-button-secondary {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+.prompt-button-secondary:hover {
+    border-color: var(--text-tertiary);
+}
+/* Add this to the end of your LandingPage.css */
+
+.success-banner {
+    position: fixed;
+    top: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--status-up);
+    color: #ffffff;
+    padding: 0.75rem 1.5rem;
+    border-radius: 9999px;
+    font-weight: 500;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 3000;
+    animation: slideInDown 0.5s ease-out;
+}
+
+@keyframes slideInDown {
+    from {
+        top: -100px;
+        opacity: 0;
+    }
+    to {
+        top: 1.5rem;
+        opacity: 1;
+    }
+}

@@ -1,0 +1,155 @@
+.profile-container {
+    width: 100%;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.profile-card {
+    background-color: var(--card-bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 700px;
+    margin: 0 auto;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #4f46e5, #c026d3);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0 auto 1rem;
+    border: 3px solid var(--card-bg-main);
+    outline: 2px solid var(--accent-color);
+}
+
+.profile-info {
+    display: flex; /* Use flexbox for better control in edit mode */
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem; /* Add spacing between elements */
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-info h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.profile-info p {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+/* --- Styles for input fields in edit mode --- */
+.profile-name-input,
+.profile-email-input {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+    width: 80%;
+    max-width: 300px;
+}
+
+.profile-name-input {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.profile-email-input {
+    font-size: 1rem;
+    color: var(--text-secondary);
+}
+
+.profile-name-input:focus,
+.profile-email-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
+}
+
+
+.profile-details {
+    display: grid;
+    /* Updated grid columns to be even */
+    grid-template-columns: repeat(2, 1fr); 
+    gap: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.detail-item span {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.detail-item strong {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.profile-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.profile-button,
+.profile-button-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+}
+
+.profile-button {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: #ffffff;
+}
+
+.profile-button:hover {
+    background-color: var(--accent-color-hover);
+    border-color: var(--accent-color-hover);
+}
+
+.profile-button-secondary {
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--text-primary);
+}
+
+.profile-button-secondary:hover {
+    border-color: var(--text-tertiary);
+    background-color: color-mix(in srgb, var(--text-primary) 5%, transparent);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

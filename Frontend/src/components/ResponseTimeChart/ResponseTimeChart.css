@@ -1,0 +1,59 @@
+.chart-wrapper {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    cursor: crosshair;
+}
+
+.chart-wrapper svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.y-axis text {
+    font-size: 10px;
+    fill: var(--text-tertiary);
+}
+
+.grid-lines path {
+    stroke: var(--border-color);
+    stroke-width: 0.5;
+    stroke-dasharray: 2, 2;
+}
+
+.chart-line {
+    fill: none;
+    stroke: var(--accent-color);
+    stroke-width: 2;
+}
+
+.chart-area {
+    fill: url(#chartGradient);
+    stroke: none;
+}
+
+.chart-tooltip {
+    position: absolute;
+    transform: translateX(-50%);
+    background-color: var(--card-bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    pointer-events: none;
+    transition: opacity 0.2s;
+    text-align: center;
+    z-index: 10;
+}
+
+.tooltip-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.tooltip-value {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
