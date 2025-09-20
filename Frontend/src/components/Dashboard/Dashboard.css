@@ -4,19 +4,28 @@
     min-height: 100vh;
     width: 100%;
 }
+
 .dashboard-main {
     flex-grow: 1;
-    padding: 2rem;
+    padding: 1rem;
+    /* Smaller padding for mobile */
     overflow-y: auto;
+    width: 100%;
 }
+
+@media (min-width: 768px) {
+    .dashboard-main {
+        padding: 2rem;
+        /* Restore larger padding for desktop */
+    }
+}
+
 .dashboard-content {
     width: 100%;
     max-width: 1280px;
     margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
 }
+
 .dashboard-header {
     display: flex;
     align-items: center;
@@ -25,26 +34,33 @@
     flex-wrap: wrap;
     gap: 1rem;
 }
+
 .header-left {
     display: flex;
-    align-items: center; /* Aligns hamburger with title */
+    align-items: center;
+    gap: 0.5rem;
 }
+
 .header-left h2 {
-    font-size: 1.875rem;
+    font-size: 1.5rem;
     font-weight: 600;
     color: var(--text-primary);
 }
-.monitoring-url {
-    font-family: monospace;
-    color: var(--text-secondary);
-    margin-left: 1rem; /* Spacing between title and URL */
+
+@media (min-width: 768px) {
+    .header-left h2 {
+        font-size: 1.875rem;
+    }
 }
+
 .header-right {
     display: flex;
     align-items: center;
     gap: 0.75rem;
 }
-.header-button, .auth-button {
+
+.header-button,
+.auth-button {
     padding: 0.6rem 1.2rem;
     border-radius: 0.5rem;
     border: 1px solid var(--border-color);
@@ -53,94 +69,160 @@
     cursor: pointer;
     font-weight: 500;
 }
-.header-button:hover, .auth-button:hover {
+
+.header-button:hover,
+.auth-button:hover {
     border-color: var(--text-tertiary);
     color: var(--text-primary);
 }
-.icon-button {
-    background: transparent;
-    color: var(--text-secondary);
-    padding: 0.5rem;
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.icon-button:hover {
-    background-color: var(--card-bg);
-    color: var(--text-primary);
-}
-.auth-button-secondary {
-    padding: 0.6rem 1.2rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--accent-color);
-    background-color: var(--accent-color);
-    color: #ffffff;
-    font-weight: 500;
-}
-.auth-button-secondary:hover {
-    background-color: var(--accent-color-hover);
-    border-color: var(--accent-color-hover);
-}
-.metrics-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-@media (min-width: 640px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .metrics-grid { grid-template-columns: repeat(4, 1fr); } }
-.dashboard-row {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
-}
-@media (min-width: 1024px) { .dashboard-row { grid-template-columns: 2fr 1fr; } }
+
 .dashboard-card {
-    background-color: var(--card-bg-main);
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 1rem;
     padding: 1.5rem;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-}
-.dashboard-card h3 {
-    font-size: 1.125rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    color: var(--text-primary);
 }
 
-/* --- NEW: Mobile Menu Button (Hamburger) --- */
+/* --- ✅ FIX: Hamburger Menu & Overlay --- */
 .mobile-menu-button {
-    display: none; /* Hidden by default on desktop */
+    display: none;
+    /* Hide by default */
     background: none;
     border: none;
     color: var(--text-primary);
     cursor: pointer;
     padding: 0.5rem;
     margin-right: 0.5rem;
+    /* Add some space next to the title */
 }
 
-/* --- NEW: Sidebar Overlay --- */
+@media (max-width: 768px) {
+    .mobile-menu-button {
+        display: block;
+        /* Show the button on mobile */
+    }
+}
+
 .sidebar-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 999; /* Below sidebar, above content */
-    display: none; /* Hidden by default */
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-/* --- NEW: Responsive Breakpoint --- */
-@media (max-width: 768px) {
-    .mobile-menu-button {
-        display: block; /* Show the hamburger button */
+.sidebar-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ... other styles for home grid, site list, toasts etc. ... */
+.home-content-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    width: 100%;
+}
+
+@media (min-width: 1024px) {
+    .home-content-grid {
+        grid-template-columns: 1fr 2fr;
+        align-items: start;
     }
-    .sidebar-overlay {
-        display: block; /* Allow the overlay to be shown */
-    }
-    .monitoring-url {
-        display: none; /* Hide URL on small screens to save space */
-    }
+}
+
+.site-details-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.site-list-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.site-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    transition: background-color 0.2s;
+}
+
+.site-list-item .site-url {
+    flex-grow: 1;
+    cursor: pointer;
+    color: var(--text-secondary);
+    word-break: break-all;
+}
+
+.site-list-item.active {
+    background-color: var(--accent-color-faded);
+}
+
+.site-list-item.active .site-url {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+
+.delete-button {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    transition: opacity 0.2s, color 0.2s;
+}
+
+.site-list-item:hover .delete-button {
+    opacity: 1;
+}
+
+.delete-button:hover {
+    color: var(--color-danger);
+}
+
+.toast-button,
+.toast-button-secondary {
+    padding: 0.5rem 1rem;
+    border: 1px solid;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.toast-button {
+    background-color: var(--color-danger, #e53e3e);
+    border-color: var(--color-danger-dark, #c53030);
+    color: white;
+}
+
+.toast-button-secondary {
+    background-color: transparent;
+    border-color: #718096;
+    color: #e2e8f0;
+}
+
+:root .Toastify__toast--success {
+    background-color: var(--color-success, #16a34a);
+}
+
+:root .Toastify__toast--error {
+    background-color: var(--color-danger, #dc2626);
+}
+
+:root .Toastify__toast--warning {
+    background-color: var(--accent-color, #4f46e5);
 }

@@ -17,7 +17,7 @@
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    background: linear-gradient(145deg, #4f46e5, #c026d3);
+    background: linear-gradient(145deg, var(--accent-color), var(--accent-color-hover));
     color: white;
     display: flex;
     align-items: center;
@@ -30,10 +30,10 @@
 }
 
 .profile-info {
-    display: flex; /* Use flexbox for better control in edit mode */
+    display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.5rem; /* Add spacing between elements */
+    gap: 0.5rem;
     text-align: center;
     margin-bottom: 2rem;
 }
@@ -50,9 +50,7 @@
     margin: 0;
 }
 
-/* --- Styles for input fields in edit mode --- */
-.profile-name-input,
-.profile-email-input {
+.profile-name-input {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 0.5rem;
@@ -60,34 +58,22 @@
     text-align: center;
     width: 80%;
     max-width: 300px;
-}
-
-.profile-name-input {
     font-size: 1.5rem;
     font-weight: 500;
     color: var(--text-primary);
 }
 
-.profile-email-input {
-    font-size: 1rem;
-    color: var(--text-secondary);
-}
-
-.profile-name-input:focus,
-.profile-email-input:focus {
+.profile-name-input:focus {
     outline: none;
     border-color: var(--accent-color);
     box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent-color) 30%, transparent);
 }
 
-
 .profile-details {
     display: grid;
-    /* Updated grid columns to be even */
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
     border-top: 1px solid var(--border-color);
-    border-bottom: 1px solid var(--border-color);
     padding: 2rem 0;
     margin-bottom: 2rem;
 }
@@ -125,6 +111,7 @@
     font-size: 0.9rem;
     font-weight: 600;
     border: 1px solid transparent;
+    cursor: pointer;
 }
 
 .profile-button {
@@ -146,10 +133,77 @@
 
 .profile-button-secondary:hover {
     border-color: var(--text-tertiary);
-    background-color: color-mix(in srgb, var(--text-primary) 5%, transparent);
+}
+
+/* --- Styles for Monitored Sites List in Profile --- */
+.profile-sites-section {
+    border-top: 1px solid var(--border-color);
+    margin-top: 2rem;
+    padding-top: 2rem;
+}
+
+.profile-sites-section h2 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.profile-sites-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-site-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--card-bg);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    margin-bottom: 0.75rem;
+}
+
+.profile-site-url {
+    color: var(--text-secondary);
+    font-family: monospace;
+    word-break: break-all;
+}
+
+.profile-site-delete {
+    background-color: var(--color-danger-faded);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: 1rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.profile-site-delete:hover {
+    background-color: var(--color-danger);
+    color: white;
+}
+
+.no-sites-message {
+    text-align: center;
+    color: var(--text-secondary);
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }

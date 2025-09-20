@@ -1,28 +1,24 @@
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
+require("dotenv").config();
 
-// Check if the environment variable is present and not empty.
-if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    throw new Error('The FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set. Please add it to your .env file or hosting provider.');
-}
+let serviceAccount;
 
 try {
-    // Parse the service account key from the environment variable.
-    const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
+  serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY);
 
-    // Initialize the Firebase Admin SDK with the parsed credentials.
-    admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount)
-    });
+  // Fix private_key by converting \n into real newlines
+  serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, '\n');
 
-    console.log('Firebase Admin SDK configured successfully from environment variable.');
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
 
+  console.log("✅ Firebase Admin initialized successfully");
 } catch (error) {
-    console.error('Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing Firebase Admin:', error);
-    // Exit the process if Firebase Admin fails to initialize, as it's a critical service.
-    process.exit(1); 
+  console.error(
+    "❌ Error parsing FIREBASE_SERVICE_ACCOUNT_KEY or initializing Firebase Admin:",
+    error
+  );
 }
 
-
-// Export the initialized admin instance for use in other parts of the application.
 module.exports = admin;
-

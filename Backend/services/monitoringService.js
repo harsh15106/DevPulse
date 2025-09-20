@@ -1,45 +1,69 @@
-const cron = require('node-cron');
-const axios = require('axios');
 const { getDB } = require('../config/db');
-const { website_up, website_response_time_ms } = require('../metrics');
+const https = require('https');
+const http = require('http');
+const url = require('url');
+const { siteStatus, responseTime } = require('../metrics');
+// ✅ All imports for mailService and firebaseAdmin have been removed as they are no longer needed.
 
-const checkSites = async () => {
-    console.log('Running scheduled job: Checking all websites...');
-    try {
-        const db = getDB();
-        const sites = await db.collection('sites').find({}).toArray();
+async function checkAllSites() {
+  console.log('Running background monitoring check for all sites...');
+  try {
+    const db = getDB();
+    const sites = await db.collection('sites').find({}).toArray();
 
-        for (const site of sites) {
-            const startTime = Date.now();
-            try {
-                // We use a HEAD request for efficiency, as we only need status and headers
-                await axios.head(site.url, { timeout: 5000 }); // 5 second timeout
-                const endTime = Date.now();
-                const responseTime = endTime - startTime;
+    for (const site of sites) {
+      const startTime = Date.now();
+      let duration = 0;
+      let currentStatus = 0; // Default to DOWN
 
-                // Update Prometheus metrics
-                website_up.labels(site.url, site.ownerId).set(1);
-                website_response_time_ms.labels(site.url, site.ownerId).set(responseTime);
+      let urlToCheck = site.url;
+      if (!/^https?:\/\//i.test(urlToCheck)) {
+        urlToCheck = `https://${urlToCheck}`;
+      }
+      const urlLabel = site.url.replace(/\/$/, "");
 
-                console.log(`[UP] ${site.url} - ${responseTime}ms`);
+      try {
+        await new Promise((resolve, reject) => {
+            const parsedUrl = url.parse(urlToCheck);
+            const lib = parsedUrl.protocol === 'https:' ? https : http;
+            const options = {
+                hostname: parsedUrl.hostname, port: parsedUrl.port || (parsedUrl.protocol === 'https:' ? 443 : 80), path: parsedUrl.path || '/', method: 'GET',
+                headers: { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' },
+                timeout: 15000,
+            };
+            const req = lib.request(options, res => {
+                res.on('data', () => {});
+                res.on('end', () => res.statusCode >= 200 && res.statusCode < 400 ? resolve() : reject(new Error(`Status Code: ${res.statusCode}`)));
+            });
+            req.on('timeout', () => req.destroy(new Error('Timeout')));
+            req.on('error', err => reject(err));
+            req.end();
+        });
+        currentStatus = 1; // Mark as UP
+        duration = (Date.now() - startTime) / 1000;
+        console.log(`✅ ${urlToCheck} is UP (${duration.toFixed(3)}s)`);
 
-            } catch (error) {
-                // If the request fails for any reason, the site is considered down
-                website_up.labels(site.url, site.ownerId).set(0);
-                // Set response time to a high value or a specific indicator for down
-                website_response_time_ms.labels(site.url, site.ownerId).set(0); 
+      } catch (error) {
+        currentStatus = 0; // Mark as DOWN
+        console.error(`❌ ${urlToCheck} is DOWN. Reason: ${error.message}`);
+      }
+      
+      // ✅ All logic for checking lastStatus and sending emails has been removed.
 
-                console.log(`[DOWN] ${site.url} - ${error.message}`);
-            }
-        }
-    } catch (error) {
-        console.error('Error during site check job:', error);
+      // Update Prometheus metrics
+      siteStatus.labels({ site_url: urlLabel, user_id: site.userId }).set(currentStatus);
+      responseTime.labels({ site_url: urlLabel, user_id: site.userId }).set(duration);
     }
-};
+  } catch (dbError) {
+    console.error('Database error during monitoring check:', dbError);
+  }
+}
 
-// Schedule the job to run every minute
-const startMonitoring = () => {
-    cron.schedule('* * * * *', checkSites);
-};
+function startMonitoring() {
+  console.log('✅ Monitoring service started. Checks will run every minute.');
+  checkAllSites();
+  setInterval(checkAllSites, 60 * 1000); 
+}
 
 module.exports = { startMonitoring };
+

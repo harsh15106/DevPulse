@@ -1,0 +1,14 @@
+# prometheus.yml
+global:
+  scrape_interval: 1m
+  evaluation_interval: 1m
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "devpulse-backend"
+    static_configs:
+      # Use this special address to allow the Docker container to reach your computer
+      - targets: ["host.docker.internal:8080"]

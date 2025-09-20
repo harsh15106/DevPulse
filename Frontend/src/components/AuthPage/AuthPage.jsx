@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './AuthPage.css';
-import { auth } from '../../firebase'; 
+// Import auth, db, and all necessary Firestore functions
+import { auth, db } from '../../firebase'; 
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore"; 
 import { 
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword,
@@ -10,7 +12,7 @@ import {
     updateProfile
 } from "firebase/auth";
 
-// --- SVG Icons ---
+// --- (SVG Icons are unchanged) ---
 const SunIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>;
 const MoonIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>;
 const EyeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>;
@@ -22,12 +24,30 @@ export default function AuthPage({ initialView, theme, toggleTheme, navigateToLa
     const [view, setView] = useState(initialView || 'login');
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleGoogleSignIn = async () => {
         const provider = new GoogleAuthProvider();
         try {
-            await signInWithPopup(auth, provider);
-            // The onAuthStateChanged listener in App.jsx will handle navigation.
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+
+            // CORRECTED: Reliable way to check for a new user.
+            // 1. Get a reference to the user's document in Firestore.
+            const userDocRef = doc(db, "users", user.uid);
+            const userDoc = await getDoc(userDocRef);
+
+            // 2. If the document does not exist, it's a new user. Create it.
+            if (!userDoc.exists()) {
+                await setDoc(userDocRef, {
+                    name: user.displayName,
+                    email: user.email,
+                    createdAt: serverTimestamp(),
+                    monitoredSitesCount: 0
+                });
+            }
+            // If the document exists, do nothing. They are a returning user.
+            
         } catch (err) {
             setError(err.message);
         }
@@ -41,12 +61,14 @@ export default function AuthPage({ initialView, theme, toggleTheme, navigateToLa
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setIsLoading(true);
 
         const email = e.target.email.value.toLowerCase();
         const password = view !== 'forgotPassword' ? e.target.password.value : null;
 
         if (view !== 'forgotPassword' && password && !validatePassword(password)) {
             setError("Password must be 8-16 characters and include an uppercase letter, a number, and a special character (!@#$%^&*).");
+            setIsLoading(false);
             return;
         }
 
@@ -55,13 +77,24 @@ export default function AuthPage({ initialView, theme, toggleTheme, navigateToLa
             const confirmPassword = e.target.confirmPassword.value;
             if (password !== confirmPassword) {
                 setError("Passwords do not match.");
+                setIsLoading(false);
                 return;
             }
             try {
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await updateProfile(userCredential.user, { displayName: name });
-                alert('Sign up successful! Please log in to continue.');
+                const user = userCredential.user;
+                await updateProfile(user, { displayName: name });
+                
+                await setDoc(doc(db, "users", user.uid), {
+                    name: name,
+                    email: email,
+                    createdAt: serverTimestamp(),
+                    monitoredSitesCount: 0
+                });
+                
+                alert('Sign-up successful! Please log in with your new account.');
                 setView('login');
+
             } catch (err) {
                 setError(err.message);
             }
@@ -80,6 +113,7 @@ export default function AuthPage({ initialView, theme, toggleTheme, navigateToLa
                 setError("Failed to send reset email. Please check the address.");
             }
         }
+        setIsLoading(false);
     };
 
     const getTitle = () => {
@@ -181,8 +215,8 @@ export default function AuthPage({ initialView, theme, toggleTheme, navigateToLa
 
                     {error && <p className="auth-error">{error}</p>}
 
-                    <button type="submit" className="auth-submit-button">
-                        {getButtonText()}
+                    <button type="submit" className="auth-submit-button" disabled={isLoading}>
+                        {isLoading ? 'Loading...' : getButtonText()}
                     </button>
                 </form>
 

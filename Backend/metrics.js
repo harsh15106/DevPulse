@@ -1,30 +1,31 @@
 const client = require('prom-client');
 
-// Create a Registry to register the metrics
+// ✅ Create a single, shared registry for the entire application.
 const register = new client.Registry();
 
-// Enable the collection of default metrics
+// Collect default metrics like memory and CPU usage and register them
 client.collectDefaultMetrics({ register });
 
-// Define custom metrics for our application
-const website_up = new client.Gauge({
-    name: 'website_up',
-    help: 'A gauge to show if a website is up (1) or down (0)',
-    labelNames: ['url', 'ownerId']
+// Define our custom gauges
+const siteStatus = new client.Gauge({
+  name: 'site_status',
+  help: 'Indicates if the site is up (1) or down (0)',
+  labelNames: ['site_url', 'user_id'],
 });
 
-const website_response_time_ms = new client.Gauge({
-    name: 'website_response_time_ms',
-    help: 'The response time of the website in milliseconds',
-    labelNames: ['url', 'ownerId']
+const responseTime = new client.Gauge({
+  name: 'response_time_seconds',
+  help: 'Response time of the website in seconds',
+  labelNames: ['site_url', 'user_id'],
 });
 
-// Register the custom metrics
-register.registerMetric(website_up);
-register.registerMetric(website_response_time_ms);
+// ✅ Register our custom gauges with the single, shared registry
+register.registerMetric(siteStatus);
+register.registerMetric(responseTime);
 
+// Export the single registry and the gauges
 module.exports = {
-    register,
-    website_up,
-    website_response_time_ms,
+  register,
+  siteStatus,
+  responseTime,
 };

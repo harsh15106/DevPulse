@@ -1,87 +1,186 @@
 .charts-page-container {
-    display: grid;
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 1.5rem;
     animation: fadeIn 0.5s ease-out;
 }
 
-@media (min-width: 1024px) {
-    .charts-page-container {
+.charts-page-container h2 {
+    font-size: 1.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.chart-site-selector {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--card-bg);
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    border: 1px solid var(--border-color);
+}
+
+.chart-site-selector label {
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.chart-site-selector select {
+    flex-grow: 1;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    background-color: var(--sidebar-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media(min-width: 1024px) {
+    .analytics-grid {
         grid-template-columns: repeat(2, 1fr);
     }
 }
 
 .chart-card {
-    min-height: 300px;
     display: flex;
     flex-direction: column;
+    gap: 1.5rem;
 }
 
-.chart-placeholder {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    color: var(--text-secondary);
-    border: 2px dashed var(--border-color);
-    border-radius: 0.75rem;
+/* --- Response Time Stats Styles --- */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media(min-width: 640px) {
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+.stat-card {
+    background-color: var(--card-bg-main);
     padding: 1rem;
+    border-radius: 0.75rem;
+    text-align: center;
 }
 
-.chart-placeholder p {
-    margin-top: 1rem;
-    max-width: 80%;
+.stat-title {
+    display: block;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
 }
 
-.chart-placeholder svg {
-    color: var(--text-tertiary);
+.stat-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
 }
 
-/* --- Simple Gauge Chart --- */
-.gauge {
-    width: 150px;
-    height: 75px;
-    position: relative;
-    overflow: hidden;
+/* --- ✅ UPDATED: Uptime Heatmap Styles --- */
+.heatmap-container {
+    display: flex;
+    gap: 0.5rem;
 }
 
-.gauge-body {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    border-radius: 150px 150px 0 0;
-    background: var(--card-bg);
+.heatmap-days {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    justify-content: space-around;
+    /* Evenly space the day labels */
 }
 
-.gauge-fill {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: inherit;
-    height: 100%;
-    background: var(--accent-color);
-    transform-origin: center top;
-    transition: transform 0.3s ease-out;
-}
-
-.gauge-cover {
-    width: 120px;
-    height: 60px;
-    background: var(--card-bg-main);
-    border-radius: 120px 120px 0 0;
-    position: absolute;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
+.heatmap-day-label {
+    height: 12px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding-bottom: 0.5rem;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: var(--text-primary);
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(24, 1fr);
+    grid-auto-rows: 1fr;
+    gap: 4px;
+    width: 100%;
+}
+
+.heatmap-cell {
+    width: 100%;
+    padding-bottom: 100%;
+    border-radius: 2px;
+}
+
+/* Added fallback colors in case the variables are not defined */
+.heatmap-cell.up {
+    background-color: var(--color-success, #22c55e);
+    /* Green */
+}
+
+.heatmap-cell.down {
+    background-color: var(--color-danger, #ef4444);
+    /* Red */
+}
+
+.heatmap-cell.no-data {
+    background-color: var(--border-color);
+}
+
+.heatmap-legend {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-top: 1rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.legend-color {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+}
+
+/* ✅ FIX: Added new rules to color the legend boxes */
+.legend-color.up {
+    background-color: var(--color-success, #22c55e);
+}
+
+.legend-color.down {
+    background-color: var(--color-danger, #ef4444);
+}
+
+.legend-color.no-data {
+    background-color: var(--border-color);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
