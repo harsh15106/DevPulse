@@ -1,18 +1,49 @@
 services:
+  # ✅ NEW: This service builds and runs your Node.js backend
+  backend:
+    build: ./Backend  # Tells Docker to build the image from the Backend/Dockerfile
+    container_name: backend
+    restart: always
+    ports:
+      - "8080:8080" # Exposes your API to the outside world
+    env_file:
+      - ./Backend/.env # Loads your secrets from the .env file
+
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    restart: always
     ports:
       - "9090:9090"
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+    depends_on:
+      - backend # Ensures the backend starts before Prometheus
 
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    restart: always
     ports:
       - "3000:3000"
     depends_on:
       - prometheus
+
+
+#  Step 2: Deploy to a Server (e.g., DigitalOcean)
+
+# Now you can deploy your entire backend and monitoring stack with a few simple commands.
+
+# 1.  **Get a Server:**
+#     * Create an account on [DigitalOcean](https://www.digitalocean.com/).
+#     * Create a new **Droplet** (their name for a server). A basic, shared CPU Droplet running **Ubuntu** is perfect and very affordable.
+
+# 2.  **Install Tools on Your Server:**
+#     * Connect to your new server using SSH.
+#     * Install Git, Docker, and Docker Compose with these commands:
+#         ```bash
+#         sudo apt-get update
+#         sudo apt-get install git docker.io docker-compose -y
+        
