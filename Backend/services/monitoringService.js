@@ -1,5 +1,5 @@
 const { getDB } = require('../config/db');
-const https = require('https-proxy-agent');
+const https = require('https');
 const http = require('http');
 const url = require('url');
 const { siteStatus, responseTime } = require('../metrics');
@@ -49,6 +49,8 @@ async function checkAllSites() {
       if (!/^https?:\/\//i.test(urlToCheck)) {
         urlToCheck = `https://${urlToCheck}`;
       }
+      
+      // ✅ FINAL FIX: Normalize the URL by removing any trailing slash
       const urlLabel = site.url.replace(/\/$/, "");
 
       try {
