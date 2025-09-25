@@ -1,10 +1,11 @@
 import { auth } from './firebase';
 
-const API_BASE_URL = 'http://localhost:8080/api';
+// ✅ UPDATED LINE: This now uses an environment variable for the live site,
+// but falls back to localhost for local development.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api';
 
 /**
  * A helper function to get the current user's Firebase auth token.
- * This is included in the header of every secure API request.
  */
 const getAuthHeader = async () => {
     const user = auth.currentUser;
@@ -52,7 +53,7 @@ export const deleteSite = async (siteId) => {
 };
 
 /**
- * Fetches the latest real-time metrics (Status, Uptime, etc.) for a single site.
+ * Fetches the latest real-time metrics for a single site.
  */
 export const getSiteMetrics = async (siteId) => {
     const headers = await getAuthHeader();
@@ -62,7 +63,7 @@ export const getSiteMetrics = async (siteId) => {
 };
 
 /**
- * Fetches the historical data (for charts and logs) for a single site.
+ * Fetches the historical data for a single site.
  */
 export const getSiteHistory = async (siteId) => {
     const headers = await getAuthHeader();
@@ -82,3 +83,4 @@ export const getSiteAnalytics = async (siteId) => {
     }
     return response.json();
 };
+
