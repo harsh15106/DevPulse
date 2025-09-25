@@ -3,12 +3,16 @@ global:
   evaluation_interval: 1m
 
 scrape_configs:
+  # This job tells Prometheus to scrape its own health metrics.
   - job_name: "prometheus"
     static_configs:
       - targets: ["localhost:9090"]
 
+  # This job tells Prometheus how to find and scrape your backend service.
   - job_name: "devpulse-backend"
     static_configs:
-      # ✅ FIX: This special address tells the Prometheus container to connect
-      # to the Node.js server running on your actual computer (the "host").
-      - targets: ["host.docker.internal:8080"]
+      # In a Docker Compose environment, services can find each other using
+      # their service name. 'backend' is the name of your Node.js service
+      # in the docker-compose.yml file.
+      - targets: ["backend:8080"]
+
