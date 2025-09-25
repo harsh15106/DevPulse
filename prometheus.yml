@@ -11,8 +11,5 @@ scrape_configs:
   # This job tells Prometheus how to find and scrape your backend service.
   - job_name: "devpulse-backend"
     static_configs:
-      # In a Docker Compose environment, services can find each other using
-      # their service name. 'backend' is the name of your Node.js service
-      # in the docker-compose.yml file.
       - targets: ["backend:8080"]
 

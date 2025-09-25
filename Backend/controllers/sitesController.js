@@ -3,6 +3,10 @@ const { ObjectId } = require('mongodb');
 const axios = require('axios');
 const getSslDetails = require('ssl-checker');
 
+// ✅ This line gets the Prometheus server URL from an environment variable.
+// If the variable isn't set, it defaults to localhost for local development.
+const PROMETHEUS_BASE_URL = process.env.PROMETHEUS_URL || 'http://localhost:9090';
+
 /**
  * @desc    Get all monitored sites for the logged-in user
  * @route   GET /api/sites
@@ -81,16 +85,14 @@ const getSiteMetrics = async (req, res) => {
         const site = await db.collection('sites').findOne({ _id: new ObjectId(req.params.id), userId: req.user.uid });
         if (!site) { return res.status(404).json({ message: 'Site not found' }); }
         
-        // ✅ FINAL FIX: Normalize the URL here exactly like in the monitoring service
         const urlLabel = site.url.replace(/\/$/, "");
-        
-        const prometheusUrl = 'http://localhost:9090/api/v1/query';
+        const prometheusUrl = `${PROMETHEUS_BASE_URL}/api/v1/query`;
         
         const statusQuery = `last_over_time(site_status{site_url="${urlLabel}"}[5m])`;
         const responseTimeQuery = `last_over_time(response_time_seconds{site_url="${urlLabel}"}[5m])`;
         const uptimeQuery = `avg_over_time(site_status{site_url="${urlLabel}"}[24h])`;
 
-        let sslInfo = { valid: false, daysRemaining: 0 };
+        let sslInfo = { valid: false };
         try {
             const hostname = new URL(site.url).hostname;
             sslInfo = await getSslDetails(hostname);
@@ -133,16 +135,14 @@ const getSiteHistory = async (req, res) => {
         const site = await db.collection('sites').findOne({ _id: new ObjectId(req.params.id), userId: req.user.uid });
         if (!site) { return res.status(404).json({ message: 'Site not found' }); }
 
-        // ✅ FINAL FIX: Normalize the URL here exactly like in the monitoring service
         const urlLabel = site.url.replace(/\/$/, "");
-
-        const prometheusUrl = 'http://localhost:9090/api/v1/query_range';
+        const prometheusRangeUrl = `${PROMETHEUS_BASE_URL}/api/v1/query_range`;
         const end = new Date();
         const start = new Date(end.getTime() - 24 * 60 * 60 * 1000);
 
         const [responseTimeRes, statusRes] = await Promise.all([
-            axios.get(prometheusUrl, { params: { query: `response_time_seconds{site_url="${urlLabel}"}`, start: start.toISOString(), end: end.toISOString(), step: '15m' } }),
-            axios.get(prometheusUrl, { params: { query: `site_status{site_url="${urlLabel}"}`, start: start.toISOString(), end: end.toISOString(), step: '15m' } })
+            axios.get(prometheusRangeUrl, { params: { query: `response_time_seconds{site_url="${urlLabel}"}`, start: start.toISOString(), end: end.toISOString(), step: '15m' } }),
+            axios.get(prometheusRangeUrl, { params: { query: `site_status{site_url="${urlLabel}"}`, start: start.toISOString(), end: end.toISOString(), step: '15m' } })
         ]);
 
         const responseTimeValues = responseTimeRes.data?.data?.result[0]?.values || [];
@@ -190,11 +190,9 @@ const getSiteAnalytics = async (req, res) => {
         const site = await db.collection('sites').findOne({ _id: new ObjectId(req.params.id), userId: req.user.uid });
         if (!site) { return res.status(404).json({ message: 'Site not found' }); }
 
-        // ✅ FINAL FIX: Normalize the URL here exactly like in the monitoring service
         const urlLabel = site.url.replace(/\/$/, "");
-
-        const prometheusUrl = 'http://localhost:9090/api/v1/query';
-        const prometheusRangeUrl = 'http://localhost:9090/api/v1/query_range';
+        const prometheusUrl = `${PROMETHEUS_BASE_URL}/api/v1/query`;
+        const prometheusRangeUrl = `${PROMETHEUS_BASE_URL}/api/v1/query_range`;
 
         const statsQueries = {
             avg: `avg_over_time(response_time_seconds{site_url="${urlLabel}"}[24h])`,
