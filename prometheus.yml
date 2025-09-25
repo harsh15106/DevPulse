@@ -9,5 +9,6 @@ scrape_configs:
 
   - job_name: "devpulse-backend"
     static_configs:
-      # ✅ FIX: Use the service name 'backend' from docker-compose
-      - targets: ["backend:8080"]
+      # ✅ FIX: This special address tells the Prometheus container to connect
+      # to the Node.js server running on your actual computer (the "host").
+      - targets: ["host.docker.internal:8080"]
