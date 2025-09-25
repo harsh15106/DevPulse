@@ -1,5 +1,5 @@
 const { getDB } = require('../config/db');
-const https = require('https');
+const https = require('https-proxy-agent');
 const http = require('http');
 const url = require('url');
 const { siteStatus, responseTime } = require('../metrics');
@@ -19,9 +19,7 @@ function requestWithDebug(siteUrl, timeoutMs = 15000) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
       },
       timeout: timeoutMs,
-      // ✅ FIX for "unable to verify the first certificate" error
-      // This tells Node.js to accept certificates from services like Firebase Hosting.
-      rejectUnauthorized: false 
+      rejectUnauthorized: false
     };
 
     const req = lib.request(options, (res) => {
@@ -51,7 +49,6 @@ async function checkAllSites() {
       if (!/^https?:\/\//i.test(urlToCheck)) {
         urlToCheck = `https://${urlToCheck}`;
       }
-      // ✅ FIX for "label mismatch": Normalize the URL by removing any trailing slash
       const urlLabel = site.url.replace(/\/$/, "");
 
       try {

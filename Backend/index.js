@@ -1,35 +1,38 @@
-// Load environment variables from .env file
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
 const admin = require('./firebaseAdmin');
 const { connectDB } = require('./config/db');
 const { startMonitoring } = require('./services/monitoringService');
 const { register } = require('./metrics');
-
-// Import only the necessary route files
 const siteRoutes = require('./routes/sites');
-// const settingsRoutes = require('./routes/settings'); // This line is now removed
 
-// --- Main Server Function ---
+// ✅ NEW: CORS Configuration to allow your frontend to connect
+const allowedOrigins = ['http://localhost:5173', 'https://dev-pulse-smoky.vercel.app'];
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl) and from the whitelist
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
 const startServer = async () => {
     try {
         await connectDB();
         console.log('✅ Successfully connected to MongoDB.');
-
         const app = express();
-
-        // Middleware
-        app.use(cors());
+        
+        // ✅ Use the new, more secure CORS options
+        app.use(cors(corsOptions));
+        
         app.use(express.json());
 
         // Public Routes
-        app.get('/', (req, res) => {
-            res.status(200).json({ message: 'DevPulse Backend is running!' });
-        });
-
-        // Prometheus metrics endpoint
+        app.get('/', (req, res) => res.status(200).json({ message: 'DevPulse Backend is running!' }));
         app.get('/metrics', async (req, res) => {
             res.setHeader('Content-Type', register.contentType);
             res.end(await register.metrics());
@@ -37,22 +40,17 @@ const startServer = async () => {
 
         // API Routes
         app.use('/api/sites', siteRoutes);
-        // app.use('/api/settings', settingsRoutes); // This line is now removed
 
-        // Finally, start the server.
         const PORT = process.env.PORT || 8080;
         app.listen(PORT, () => {
             console.log(`✅ Server is listening on port ${PORT}`);
             startMonitoring();
         });
-
     } catch (error) {
-        console.error('❌ Could not start server:');
-        console.error(error);
+        console.error('❌ Could not start server:', error);
         process.exit(1);
     }
 };
 
-// --- Start the application ---
 startServer();
 
