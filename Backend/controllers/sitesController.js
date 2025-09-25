@@ -34,8 +34,15 @@ const getSites = async (req, res) => {
  * @access  Private
  */
 const addSite = async (req, res) => {
-    const { url } = req.body;
+    let { url } = req.body; // Use 'let' so we can modify it
     if (!url) { return res.status(400).json({ message: 'URL is required' }); }
+
+    // ✅ FIX: Automatically format the URL before processing
+    url = url.trim();
+    if (!/^https?:\/\//i.test(url)) {
+        url = `https://${url}`;
+    }
+
     try {
         const db = getDB();
         const siteCount = await db.collection('sites').countDocuments({ userId: req.user.uid });
@@ -54,6 +61,7 @@ const addSite = async (req, res) => {
         res.status(500).json({ message: 'Error adding site' });
     }
 };
+
 
 /**
  * @desc    Delete a monitored site
